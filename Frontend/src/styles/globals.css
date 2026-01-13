@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ===============================
+   BASE THEME
+   =============================== */
+
+html,
+body {
+  background-color: #0B0D10;
+}
+
+body {
+  color: #E5E7EB; /* gray-200 */
+}
+
+/* ===============================
+   FORM ELEMENTS (BASE)
+   =============================== */
+
+input,
+textarea,
+select {
+  color: #E5E7EB;
+  background-color: #111418;
+}
+
+/* ===============================
+   COMMON INPUT CLASSES
+   =============================== */
+
+.input {
+  @apply bg-white dark:bg-panel
+         border border-slate-200 dark:border-border
+         rounded px-3 py-2
+         text-sm
+         placeholder:text-slate-400
+         focus:outline-none focus:ring-2
+         focus:ring-black/10 dark:focus:ring-white/10;
+}
+
+.filter-input {
+  @apply bg-slate-100 dark:bg-panel
+         border border-slate-200 dark:border-border
+         rounded px-3 py-2
+         text-slate-900 dark:text-white;
+}
+
+/* ===============================
+   GLOBAL SELECT (DEDUPED)
+   =============================== */
+
+@layer base {
+  select {
+    @apply bg-white dark:bg-black
+           text-black dark:text-white
+           border border-gray-300 dark:border-neutral-700
+           focus:outline-none focus:ring-0;
+    appearance: none;
+  }
+
+  select option {
+    background-color: #000000;
+    color: #ffffff;
+  }
+
+  /* Best-effort (Firefox / Safari) */
+  select option:hover,
+  select option:checked {
+    background-color: #1f1f1f;
+    color: #ffffff;
+  }
+}
+select {
+  color-scheme: dark;
+}
