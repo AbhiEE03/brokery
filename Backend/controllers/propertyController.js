@@ -151,8 +151,13 @@ exports.addProperties = async (req, res) => {
     //     message: "Cover image is required",
     //   });
     // }
-
-    const cover = req.files?.cover[0]?.path || "https://t4.ftcdn.net/jpg/00/89/55/15/360_F_89551596_LdHAZRwz3i4EM4J0NHNHy2hEUYDfXc0j.jpg"; // Cloudinary URL
+    if (req.files?.cover) {
+      const cover = req.files?.cover[0]?.path
+    }
+    else {
+      const cover = "https://t4.ftcdn.net/jpg/00/89/55/15/360_F_89551596_LdHAZRwz3i4EM4J0NHNHy2hEUYDfXc0j.jpg";
+    }
+    // const cover = req.files?.cover[0]?.path || ; // Cloudinary URL
 
     const gallery = req.files.gallery
       ? req.files.gallery.map(f => f.path)
