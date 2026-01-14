@@ -152,7 +152,7 @@ const propertySchema = new mongoose.Schema(
     /* =====================
        MEDIA
     ===================== */
-    cover: { type: String, required: true },
+    cover: { type: String, required: false },
     gallery: [String],
     map: String,
     floorPlan: String,
