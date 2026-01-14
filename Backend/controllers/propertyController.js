@@ -145,12 +145,12 @@ exports.addProperties = async (req, res) => {
     /* =========================
        FILE HANDLING
     ========================= */
-    if (!req.files || !req.files.cover) {
-      return res.status(400).json({
-        success: false,
-        message: "Cover image is required",
-      });
-    }
+    // if (!req.files || !req.files.cover) {
+    //   return res.status(400).json({
+    //     success: false,
+    //     message: "Cover image is required",
+    //   });
+    // }
 
     const cover = req.files.cover[0].path; // Cloudinary URL
 
