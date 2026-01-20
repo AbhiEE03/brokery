@@ -349,7 +349,7 @@ export default function AdminPropertyDetails() {
   useEffect(() => {
     api.get(`/admin/properties/${id}`).then(res => {
       setProperty(res.property);
-      console.log("res", res)
+      // console.log("res", res)
       const cover =
         res.property.images?.find(i => i.type === "cover") ||
         res.property.images?.[0];

@@ -24,7 +24,7 @@ export default function PropertyDetails() {
       setProperty(res.property);
       setPendingRequest(res.pendingRequest);
       setLoading(false);
-      console.log("res", res)
+      // console.log("res", res)
     });
   }, [id]);
 
