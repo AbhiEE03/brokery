@@ -23,6 +23,10 @@ const FIELD_TYPES = [
 
 export default function AdminPropertyFormSettings() {
   const [config, setConfig] = useState(null);
+  const [openPageIndex, setOpenPageIndex] = useState(null);
+  const [openPages, setOpenPages] = useState({});
+
+
 
   useEffect(() => {
     api.get("/admin/form-config/property")
@@ -31,7 +35,11 @@ export default function AdminPropertyFormSettings() {
         // console.log("checking", res)
       )
       .catch(err => console.error(err));
-  }, []);
+    if (config?.pages?.length) {
+      setOpenPageIndex();
+    }
+  }
+    , []);
 
   if (!config) return <AdminLayout>Loading…</AdminLayout>;
 
@@ -119,8 +127,13 @@ export default function AdminPropertyFormSettings() {
   /* =========================
      UI
   ========================= */
+
+
   return (
+
     <AdminLayout>
+
+
       <div className="max-w-6xl mx-auto px-4 md:px-0">
 
         <h1 className="text-2xl font-semibold mb-6">
@@ -131,21 +144,47 @@ export default function AdminPropertyFormSettings() {
         <div className="space-y-5 md:space-y-6">
 
           {config.pages.map((page, pageIndex) => (
+
             <div
               key={page.id}
               className="bg-white dark:bg-black border dark:border-border rounded-xl p-5"
             >
               {/* PAGE HEADER */}
-              <div className="flex items-center justify-between mb-4">
-                <input
-                  value={page.title}
-                  onChange={(e) =>
-                    updatePageTitle(pageIndex, e.target.value)
-                  }
-                  className="text-lg font-semibold bg-transparent border-b focus:outline-none"
-                />
+              {/* PAGE HEADER */}
+              <div className="flex items-center justify-between mb-3">
 
-                <div className="flex gap-3">
+                {/* LEFT: TITLE (TOGGLES ACCORDION) */}
+                <button
+                  type="button"
+                  onClick={() =>
+                    setOpenPageIndex(
+                      openPageIndex === pageIndex ? null : pageIndex
+                    )
+                  }
+                  className="flex items-center gap-2 text-left flex-1"
+                >
+                  <span
+                    className={`transition-transform duration-300 ${openPageIndex === pageIndex ? "rotate-90" : ""
+                      }`}
+                  >
+                    ▶
+                  </span>
+
+                  <input
+                    value={page.title}
+                    onClick={(e) => e.stopPropagation()} // 🔒 don't toggle while editing
+                    onChange={(e) =>
+                      updatePageTitle(pageIndex, e.target.value)
+                    }
+                    className="text-lg font-semibold bg-transparent border-b focus:outline-none"
+                  />
+                </button>
+
+                {/* RIGHT: ACTIONS (DO NOT TOGGLE) */}
+                <div
+                  className="flex gap-3"
+                  onClick={(e) => e.stopPropagation()} // 🔒 prevent accordion toggle
+                >
                   <button
                     onClick={() => addField(pageIndex)}
                     className="text-sm px-3 py-1 border rounded hover:bg-slate-50 dark:hover:bg-slate-800"
@@ -160,143 +199,154 @@ export default function AdminPropertyFormSettings() {
                     Delete Page
                   </button>
                 </div>
+
               </div>
 
 
+
+
               {/* FIELD TABLE */}
-              {page.fields.length === 0 ? (
-                <p className="text-sm text-slate-400">
-                  No fields added yet.
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {page.fields.map((field, fieldIndex) => (
-                    <div
-                      key={fieldIndex}
-                      className="rounded-xl p-4 md:p-5 space-y-4 bg-slate-50 dark:bg-neutral-900 shadow-sm">
+              <div
+                className={`overflow-hidden transition-all duration-300 ease-in-out ${openPageIndex === pageIndex
+                  ? "max-h-[3000px] opacity-100"
+                  : "max-h-0 opacity-0"
+                  }`}
+              >
+                <div className="pt-3 space-y-4">
 
-                      {/* MAIN ROW */}
-                      <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-3 md:items-center">
-
-                        <input
-                          placeholder="Key"
-                          value={field.key}
-                          onChange={(e) =>
-                            updateField(pageIndex, fieldIndex, "key", e.target.value)
-                          }
-                          className="md:col-span-3 input"
-
-                        />
-
-                        <input
-                          placeholder="Label"
-                          value={field.label}
-                          onChange={(e) =>
-                            updateField(pageIndex, fieldIndex, "label", e.target.value)
-                          }
-                          className="col-span-3 input"
-                        />
-
-                        <select
-                          value={field.type}
-                          onChange={(e) =>
-                            updateField(pageIndex, fieldIndex, "type", e.target.value)
-                          }
-                          className="col-span-2 input"
+                  {page.fields.length === 0 ? (
+                    <p className="text-sm text-slate-400">
+                      No fields added yet.
+                    </p>
+                  ) : (
+                    <div className="space-y-3">
+                      {page.fields.map((field, fieldIndex) => (
+                        <div
+                          key={fieldIndex}
+                          className="rounded-xl p-4 md:p-5 space-y-4 bg-slate-50 dark:bg-neutral-900 shadow-sm"
                         >
-                          {FIELD_TYPES.map(t => (
-                            <option key={t} value={t}>{t}</option>
-                          ))}
-                        </select>
 
-                        <label className="md:col-span-1 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                          {/* MAIN ROW */}
+                          <div className="flex flex-col gap-4 md:grid md:grid-cols-12 md:gap-3 md:items-center">
 
-                          <input
-                            type="checkbox"
-                            checked={field.required}
-                            onChange={(e) =>
-                              updateField(pageIndex, fieldIndex, "required", e.target.checked)
-                            }
-                          />
-                          Req
-                        </label>
+                            <input
+                              placeholder="Key"
+                              value={field.key}
+                              onChange={(e) =>
+                                updateField(pageIndex, fieldIndex, "key", e.target.value)
+                              }
+                              className="md:col-span-3 input"
+                            />
 
-                        <label className="col-span-1 flex gap-2 text-xs items-center">
-                          <input
-                            type="checkbox"
-                            checked={field.visible}
-                            onChange={(e) =>
-                              updateField(pageIndex, fieldIndex, "visible", e.target.checked)
-                            }
-                          />
-                          Show
-                        </label>
+                            <input
+                              placeholder="Label"
+                              value={field.label}
+                              onChange={(e) =>
+                                updateField(pageIndex, fieldIndex, "label", e.target.value)
+                              }
+                              className="col-span-3 input"
+                            />
 
-                        <button
-                          onClick={() => removeField(pageIndex, fieldIndex)}
-                          className="md:col-span-2 text-sm text-slate-400 hover:text-red-600 transition"
+                            <select
+                              value={field.type}
+                              onChange={(e) =>
+                                updateField(pageIndex, fieldIndex, "type", e.target.value)
+                              }
+                              className="col-span-2 input"
+                            >
+                              {FIELD_TYPES.map(t => (
+                                <option key={t} value={t}>{t}</option>
+                              ))}
+                            </select>
 
-                        >
-                          Remove
-                        </button>
-                      </div>
+                            <label className="md:col-span-1 flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400">
+                              <input
+                                type="checkbox"
+                                checked={field.required}
+                                onChange={(e) =>
+                                  updateField(pageIndex, fieldIndex, "required", e.target.checked)
+                                }
+                              />
+                              Req
+                            </label>
 
-                      {/* ✅ OPTIONS EDITOR — SAFE SCOPE */}
-                      {(field.type === "select" || field.type === "radio") && (
-                        <div className="mt-3 rounded-lg bg-white dark:bg-black p-3 space-y-3">
-
-                          <div className="flex justify-between items-center">
-                            <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                              Select Options
-                            </span>
+                            <label className="col-span-1 flex gap-2 text-xs items-center">
+                              <input
+                                type="checkbox"
+                                checked={field.visible}
+                                onChange={(e) =>
+                                  updateField(pageIndex, fieldIndex, "visible", e.target.checked)
+                                }
+                              />
+                              Show
+                            </label>
 
                             <button
-                              onClick={() => addOption(pageIndex, fieldIndex)}
-                              className="text-xs px-3 py-1 dark:text-neutral-900 rounded-md bg-slate-100 hover:bg-slate-200 transition"
-
+                              onClick={() => removeField(pageIndex, fieldIndex)}
+                              className="md:col-span-2 text-sm text-slate-400 hover:text-red-600 transition"
                             >
-                              + Add Option
+                              Remove
                             </button>
                           </div>
 
-                          {field.options.length === 0 && (
-                            <p className="text-xs text-slate-400">
-                              No options added yet
-                            </p>
+                          {(field.type === "select" || field.type === "radio") && (
+                            <div className="mt-3 rounded-lg bg-white dark:bg-black p-3 space-y-3">
+
+                              <div className="flex justify-between items-center">
+                                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">
+                                  Select Options
+                                </span>
+
+                                <button
+                                  onClick={() => addOption(pageIndex, fieldIndex)}
+                                  className="text-xs px-3 py-1 dark:text-neutral-900 rounded-md bg-slate-100 hover:bg-slate-200 transition"
+                                >
+                                  + Add Option
+                                </button>
+                              </div>
+
+                              {field.options.length === 0 && (
+                                <p className="text-xs text-slate-400">
+                                  No options added yet
+                                </p>
+                              )}
+
+                              {field.options.map((opt, optIndex) => (
+                                <div key={optIndex} className="flex gap-2">
+                                  <input
+                                    value={opt}
+                                    placeholder={`Option ${optIndex + 1}`}
+                                    onChange={(e) =>
+                                      updateOption(
+                                        pageIndex,
+                                        fieldIndex,
+                                        optIndex,
+                                        e.target.value
+                                      )
+                                    }
+                                    className="input flex-1"
+                                  />
+                                  <button
+                                    onClick={() =>
+                                      removeOption(pageIndex, fieldIndex, optIndex)
+                                    }
+                                    className="text-red-500 text-xs"
+                                  >
+                                    ✕
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
                           )}
 
-                          {field.options.map((opt, optIndex) => (
-                            <div key={optIndex} className="flex gap-2">
-                              <input
-                                value={opt}
-                                placeholder={`Option ${optIndex + 1}`}
-                                onChange={(e) =>
-                                  updateOption(
-                                    pageIndex,
-                                    fieldIndex,
-                                    optIndex,
-                                    e.target.value
-                                  )
-                                }
-                                className="input flex-1"
-                              />
-                              <button
-                                onClick={() =>
-                                  removeOption(pageIndex, fieldIndex, optIndex)
-                                }
-                                className="text-red-500 text-xs"
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          ))}
                         </div>
-                      )}
+                      ))}
                     </div>
-                  ))}
+                  )}
 
                 </div>
-              )}
+              </div>
+
             </div>
           ))}
         </div>
