@@ -31,7 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 ======================= */
 app.use(
    cors({
-      origin: "http://localhost:5173" || "https://batra-associates-ba.vercel.app", // React
+      origin: "https://batra-associates-ba.vercel.app", // React
       credentials: true
    })
 );
