@@ -2,9 +2,15 @@
 
 
 const Property = require("../models/Property");
-
+const Dealer = require("../models/dealers");
+const Extention = require("../models/extention");
+const Flat = require("../models/flats");
+const Floor = require("../models/floors");
+// const Dealer = require("../models/dealers");
+// const Dealer = require("../models/dealers");
 
 exports.getAllPropertiesAdmin = async (req, res) => {
+
   try {
     const {
       q,
@@ -68,6 +74,296 @@ exports.getAllPropertiesAdmin = async (req, res) => {
     });
   }
 };
+
+
+
+exports.getAllDealersAdmin = async (req, res) => {
+  console.log("GET ALL DEALERS CALLED WITH QUERY:", req.query); // DEBUG LOG
+  try {
+    const {
+      q,
+      verificationStatus,
+      dealerType,
+      city,
+      block,
+      sector,
+      officeType,
+    } = req.query;
+
+    const filter = {};
+
+    /* =====================
+       SEARCH (All Fields)
+    ===================== */
+    if (q) {
+      filter.$or = [
+        { company: { $regex: q, $options: "i" } },
+        { contactPerson: { $regex: q, $options: "i" } },
+        { mobile: { $regex: q, $options: "i" } },
+        { whatsapp: { $regex: q, $options: "i" } },
+        { city: { $regex: q, $options: "i" } },
+        { block: { $regex: q, $options: "i" } },
+        { sector: { $regex: q, $options: "i" } },
+        { email: { $regex: q, $options: "i" } },
+      ];
+    }
+
+    /* =====================
+       FILTERS
+    ===================== */
+    if (verificationStatus)
+      filter.verificationStatus = verificationStatus;
+
+    if (dealerType)
+      filter.dealerType = dealerType;
+
+    if (city)
+      filter.city = { $regex: city, $options: "i" };
+
+    if (block)
+      filter.block = block;
+
+    if (sector)
+      filter.sector = sector;
+
+    if (officeType)
+      filter.officeType = officeType;
+
+    /* =====================
+       QUERY
+    ===================== */
+    const dealers = await Dealer.find(filter)
+      .sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: dealers.length,
+      dealers,
+    });
+
+  } catch (err) {
+    console.error("GET DEALERS ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch dealers",
+    });
+  }
+};
+
+exports.getDealerMeta = async (req, res) => {
+  try {
+    const [
+      verificationStatus,
+      dealerType,
+      city,
+      block,
+      sector,
+      officeType,
+    ] = await Promise.all([
+      Dealer.distinct("verificationStatus"),
+      Dealer.distinct("dealerType"),
+      Dealer.distinct("city"),
+      Dealer.distinct("block"),
+      Dealer.distinct("sector"),
+      Dealer.distinct("officeType"),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      filters: {
+        verificationStatus,
+        dealerType,
+        city,
+        block,
+        sector,
+        officeType,
+      },
+    });
+
+  } catch (err) {
+    console.error("DEALER META ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch filter metadata",
+    });
+  }
+};
+
+
+
+exports.getAllExtentionsAdmin = async (req, res) => {
+  try {
+    const { q, ...filters } = req.query;
+
+    const filter = {};
+
+    /* =======================
+       GLOBAL SEARCH
+    ======================== */
+    if (q) {
+      filter.$or = Object.keys(Extention.schema.paths)
+        .filter(
+          (key) =>
+            !["_id", "__v", "createdAt", "updatedAt"].includes(key)
+        )
+        .map((key) => ({
+          [key]: { $regex: q, $options: "i" },
+        }));
+    }
+
+    /* =======================
+       FIELD FILTERS
+    ======================== */
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        filter[key] = filters[key];
+      }
+    });
+
+    const extentions = await Extention.find(filter)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      count: extentions.length,
+      extentions,
+    });
+  } catch (err) {
+    console.error("GET EXTENTION ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch extentions",
+    });
+  }
+};
+exports.getExtentionMeta = async (req, res) => {
+  try {
+    const fields = Object.keys(Extention.schema.paths).filter(
+      (key) =>
+        !["_id", "__v", "createdAt", "updatedAt"].includes(key)
+    );
+
+    const result = {};
+
+    for (const field of fields) {
+      result[field] = await Extention.distinct(field);
+    }
+
+    res.status(200).json({
+      success: true,
+      filters: result,
+    });
+  } catch (err) {
+    console.error("EXTENTION META ERROR:", err);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch filter metadata",
+    });
+  }
+};
+
+
+exports.getAllFlatsAdmin = async (req, res) => {
+  try {
+    const flats = await Flat.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: flats.length,
+      flats,
+    });
+  } catch (err) {
+    console.error("GET FLATS ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch flats",
+    });
+  }
+};
+
+
+exports.getAllFloorsAdmin = async (req, res) => {
+  try {
+    const floors = await Floor.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: floors.length,
+      floors,
+    });
+  } catch (err) {
+    console.error("GET FLOORS ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch floors",
+    });
+  }
+};
+exports.getFloorMeta = async (req, res) => {
+  try {
+    const meta = await Floor.aggregate([
+      {
+        $group: {
+          _id: null,
+          blocks: { $addToSet: "$block" },
+          pockets: { $addToSet: "$pocket" },
+          sectors: { $addToSet: "$sector" },
+          bhk: { $addToSet: "$bhk" },
+          floor: { $addToSet: "$floor" },
+          status: { $addToSet: "$status" },
+          category: { $addToSet: "$category" },
+          road: { $addToSet: "$road" },
+          facing: { $addToSet: "$facing" },
+          dealerType: { $addToSet: "$dealerType" },
+          source: { $addToSet: "$source" },
+          city: { $addToSet: "$city" },
+           oldNew: { $addToSet: "$oldNew" },
+
+
+       
+        }
+      }
+    ]);
+
+    if (!meta.length) {
+      return res.status(200).json({
+        success: true,
+        filters: {}
+      });
+    }
+
+    // Remove null / undefined values
+    const clean = {};
+    Object.keys(meta[0]).forEach(key => {
+      if (key !== "_id") {
+        clean[key] = meta[0][key].filter(v => v !== null && v !== undefined);
+      }
+    });
+
+    return res.status(200).json({
+      success: true,
+      filters: clean
+    });
+
+  } catch (err) {
+    console.error("FLOOR META ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch floor filters"
+    });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 
 
 exports.getAllPropertiesBroker = async (req, res) => {

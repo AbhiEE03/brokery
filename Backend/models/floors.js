@@ -44,5 +44,6 @@ const floorsSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+const realestateDB = mongoose.connection.useDb("realestate_db");
 
-module.exports = mongoose.model("Floor", floorsSchema);
+module.exports = realestateDB.model("Floor", floorsSchema);

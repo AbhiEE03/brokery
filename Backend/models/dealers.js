@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-
+// const realestateDB = mongoose.connection.useDb("realestate_db");
 const dealerSchema = new mongoose.Schema(
   {
     verificationStatus: String,
@@ -34,5 +34,5 @@ const dealerSchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-module.exports = mongoose.model("Dealer", dealerSchema);
+const realestateDB = mongoose.connection.useDb("realestate_db");
+module.exports = realestateDB.model("Dealer", dealerSchema);

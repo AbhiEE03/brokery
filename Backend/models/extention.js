@@ -44,4 +44,5 @@ const extentionSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Extention", extentionSchema);
+const realestateDB = mongoose.connection.useDb("realestate_db");
+module.exports = realestateDB.model("Extention", extentionSchema);

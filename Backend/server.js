@@ -29,11 +29,29 @@ app.use(express.urlencoded({ extended: true }));
 /* =======================
    CORS (THIS FIXES NETWORK ERROR)
 ======================= */
+// app.use(
+//    cors({
+//       origin: "https://batra-associates-ba.vercel.app", // React
+//       credentials: true
+//    })
+// );
+const allowedOrigins = [
+  "http://localhost:5173", // Vite
+  "http://localhost:3000", // CRA (if used)
+  "https://batra-associates-ba.vercel.app"
+];
+
 app.use(
-   cors({
-      origin: "https://batra-associates-ba.vercel.app", // React
-      credentials: true
-   })
+  cors({
+    origin: function (origin, callback) {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true,
+  })
 );
 //  "http://localhost:5173" ||
 // "https://batra-associates-ba.vercel.app" ||

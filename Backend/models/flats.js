@@ -43,5 +43,5 @@ const flatsSchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-module.exports = mongoose.model("Flat", flatsSchema);
+const realestateDB = mongoose.connection.useDb("realestate_db");
+module.exports = realestateDB.model("Flat", flatsSchema);

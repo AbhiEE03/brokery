@@ -22,6 +22,60 @@ router.get(
   propertyController.getAllPropertiesAdmin
 );
 
+
+
+
+router.get(
+  "/dealers",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllDealersAdmin
+);
+router.get(
+  "/dealers/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getDealerMeta
+);
+router.get(
+  "/extentions",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllExtentionsAdmin
+);
+
+router.get(
+  "/extentions/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getExtentionMeta
+);
+
+router.get(
+  "/flats",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllFlatsAdmin
+);
+
+router.get(
+  "/floors",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllFloorsAdmin
+);
+router.get(
+  "/floors/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getFloorMeta
+);
+
+
+
+
+
+
 router.get(
   "/properties/:id",
   verifyToken,
