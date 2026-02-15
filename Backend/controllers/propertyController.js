@@ -6,8 +6,10 @@ const Dealer = require("../models/dealers");
 const Extention = require("../models/extention");
 const Flat = require("../models/flats");
 const Floor = require("../models/floors");
-// const Dealer = require("../models/dealers");
-// const Dealer = require("../models/dealers");
+const Kothi = require("../models/kothi");
+const MCD = require("../models/mcd");
+const Party = require("../models/parties");
+const RentAts = require("../models/rentAts");
 
 exports.getAllPropertiesAdmin = async (req, res) => {
 
@@ -355,7 +357,256 @@ exports.getFloorMeta = async (req, res) => {
 };
 
 
+exports.getAllKothis = async (req, res) => {
+  try {
+    const kothis = await Kothi.find().sort({ createdAt: -1 });
 
+    return res.json({
+      success: true,
+      count: kothis.length,
+      kothis
+    });
+  } catch (err) {
+    console.error("GET KOTHI ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch kothis"
+    });
+  }
+};
+exports.getKothiMeta = async (req, res) => {
+  try {
+    const data = await Kothi.aggregate([
+      {
+        $group: {
+          _id: null,
+          block: { $addToSet: "$block" },
+          pocket: { $addToSet: "$pocket" },
+          sector: { $addToSet: "$sector" },
+          stories: { $addToSet: "$stories" },
+          bhk: { $addToSet: "$bhk" },
+          oldNew: { $addToSet: "$oldNew" },
+          title: { $addToSet: "$title" },
+          category: { $addToSet: "$category" },
+          status: { $addToSet: "$status" },
+          road: { $addToSet: "$road" },
+          facing: { $addToSet: "$facing" },
+          through: { $addToSet: "$through" },
+          sourceOffice: { $addToSet: "$sourceOffice" },
+          altBlock: { $addToSet: "$altBlock" },
+          altPocket: { $addToSet: "$altPocket" },
+          altSector: { $addToSet: "$altSector" },
+          altCity: { $addToSet: "$altCity" }
+        }
+      }
+    ]);
+
+    const filters = data[0] || {};
+    delete filters._id;
+
+    return res.json({
+      success: true,
+      filters
+    });
+  } catch (err) {
+    console.error("KOTHI META ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch kothi meta"
+    });
+  }
+};
+
+
+exports.getAllMCD = async (req, res) => {
+  try {
+    const records = await MCD.find().sort({ createdAt: -1 });
+
+    return res.json({
+      success: true,
+      count: records.length,
+      mcd: records
+    });
+  } catch (err) {
+    console.error("GET MCD ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch MCD records"
+    });
+  }
+};
+exports.getMCDMeta = async (req, res) => {
+  try {
+    const data = await MCD.aggregate([
+      {
+        $group: {
+          _id: null,
+          block: { $addToSet: "$block" },
+          pocket: { $addToSet: "$pocket" },
+          sector: { $addToSet: "$sector" },
+          society: { $addToSet: "$society" },
+          area: { $addToSet: "$area" },
+          wardNumber: { $addToSet: "$wardNumber" },
+          unauthorizedConstruction: { $addToSet: "$unauthorizedConstruction" },
+          fileNumber: { $addToSet: "$fileNumber" },
+          bookingId: { $addToSet: "$bookingId" },
+          demolitionStatus: { $addToSet: "$demolitionStatus" }
+        }
+      }
+    ]);
+
+    const filters = data[0] || {};
+    delete filters._id;
+
+    return res.json({
+      success: true,
+      filters
+    });
+  } catch (err) {
+    console.error("MCD META ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch MCD meta"
+    });
+  }
+};
+
+exports.getAllPartiesAdmin = async (req, res) => {
+  try {
+    const parties = await Party.find().sort({ createdAt: -1 });
+
+    return res.status(200).json({
+      success: true,
+      count: parties.length,
+      parties,
+    });
+  } catch (err) {
+    console.error("GET PARTIES ERROR:", err);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch parties",
+    });
+  }
+};
+
+/* ================= META FILTER ================= */
+exports.getPartyMeta = async (req, res) => {
+  try {
+    const fields = [
+      "block",
+      "pocket",
+      "sector",
+      "area",
+      "areaDetail",
+      "floorPreference",
+      "bhkPreference",
+      "roadPreference",
+      "propertyType",
+      "type",
+      "reason1",
+      "reason2",
+      "month",
+      "budget",
+      "leadSource",
+      "followUpStatus"
+    ];
+
+    const filters = {};
+
+    for (let field of fields) {
+      const values = await Party.aggregate([
+        { $match: { [field]: { $ne: null } } },
+        {
+          $group: {
+            _id: `$${field}`
+          }
+        },
+        { $sort: { _id: 1 } }
+      ]);
+
+      filters[field] = values.map(v => v._id).filter(Boolean);
+    }
+
+    res.json({
+      success: true,
+      filters
+    });
+
+  } catch (error) {
+    console.error("PARTY META ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch party meta"
+    });
+  }
+};
+
+
+exports.getRentAts = async (req, res) => {
+  try {
+    const rentAts = await RentAts.find().sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: rentAts.length,
+      rentAts
+    });
+  } catch (error) {
+    console.error("RENT ATS ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch rent records"
+    });
+  }
+};
+exports.getRentAtsMeta = async (req, res) => {
+  try {
+    const fields = [
+      "block",
+      "pocket",
+      "propertyNumber",
+      "floor",
+      "sector",
+      "policeVerification",
+      "agreementDate",
+      "rentIncreaseInfo",
+      "status",
+      "statusDetail",
+      "rentAmount",
+      "securityAmount",
+      "ownerCommission",
+      "tenantCommission",
+      "dealerShare",
+      "commission",
+      "ownerName",
+      "tenantName"
+    ];
+
+    const filters = {};
+
+    for (let field of fields) {
+      const values = await RentAts.aggregate([
+        { $match: { [field]: { $ne: null } } },
+        { $group: { _id: `$${field}` } },
+        { $sort: { _id: 1 } }
+      ]);
+
+      filters[field] = values.map(v => v._id).filter(Boolean);
+    }
+
+    res.json({
+      success: true,
+      filters
+    });
+
+  } catch (error) {
+    console.error("RENT META ERROR:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch rent meta"
+    });
+  }
+};
 
 
 

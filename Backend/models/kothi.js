@@ -42,5 +42,6 @@ const kothiSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+const realestateDB = mongoose.connection.useDb("realestate_db");
 
-module.exports = mongoose.model("Kothi", kothiSchema);
+module.exports = realestateDB.model("Kothi", kothiSchema);

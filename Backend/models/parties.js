@@ -42,5 +42,5 @@ const partiesSchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-module.exports = mongoose.model("Party", partiesSchema);
+const realestateDB = mongoose.connection.useDb("realestate_db");
+module.exports = realestateDB.model("Party", partiesSchema);

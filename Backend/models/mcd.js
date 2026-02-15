@@ -24,4 +24,7 @@ const mcdSchema = new mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("MCD", mcdSchema);
+
+const realestateDB = mongoose.connection.useDb("realestate_db");
+
+module.exports = realestateDB.model("MCD", mcdSchema);

@@ -39,5 +39,5 @@ const rentAtsSchema = new mongoose.Schema(
     timestamps: true
   }
 );
-
-module.exports = mongoose.model("RentAts", rentAtsSchema);
+const realestateDB = mongoose.connection.useDb("realestate_db");
+module.exports = realestateDB.model("RentAts", rentAtsSchema);

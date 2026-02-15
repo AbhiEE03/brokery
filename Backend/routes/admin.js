@@ -72,6 +72,59 @@ router.get(
 );
 
 
+router.get(
+  "/kothis",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllKothis
+);
+
+router.get(
+  "/kothis/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getKothiMeta
+);
+
+
+router.get(
+  "/mcd",
+  verifyToken,
+  isAdmin,
+  propertyController.getAllMCD
+);
+
+router.get(
+  "/mcd/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getMCDMeta
+);
+
+
+router.get("/parties",  verifyToken,
+  isAdmin, propertyController.getAllPartiesAdmin);
+router.get("/parties/meta",  verifyToken,
+  isAdmin, propertyController.getPartyMeta);
+
+
+router.get(
+  "/rentats",
+  verifyToken,
+  isAdmin,
+  propertyController.getRentAts
+);
+
+router.get(
+  "/rentats/meta",
+  verifyToken,
+  isAdmin,
+  propertyController.getRentAtsMeta
+);
+
+
+
+
 
 
 
