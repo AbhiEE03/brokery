@@ -27,6 +27,8 @@ import AdminClientChangeForm from "./app/admin/ClientChangeForm"
 import AdminClientDetails from "./app/admin/ClientDetails"
 // AdminClientChangeRequests
 
+import SharedListings from "./app/sharedListing/SharedListings";
+
 
 
 
@@ -75,6 +77,9 @@ export default function AppRoutes() {
         <Route path="/admin/mcd" element={<AdminMCD />} />
         <Route path="/admin/parties" element={<AdminParties />} />
         <Route path="/admin/rentAts" element={<AdminRentAts />} />
+
+        <Route path="/shared-listings" element={<SharedListings />} />
+
 
         <Route path="/admin/clients" element={<AdminClients />} />
         <Route path="/admin/client/:id" element={<AdminClientDetails />} />

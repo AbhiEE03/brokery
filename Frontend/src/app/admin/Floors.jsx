@@ -198,8 +198,11 @@ import { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import AdminLayout from "../../components/layout/AdminLayout";
 import SectionHeader from "./components/SectionHeader";
+import { useNavigate } from "react-router-dom";
 
 export default function Floors() {
+      const type = "floor";  // ✅ ADD THIS LINE
+  const navigate = useNavigate();
   const [floors, setFloors] = useState([]);
   const [meta, setMeta] = useState({});
   const [loading, setLoading] = useState(true);
@@ -238,9 +241,39 @@ useEffect(() => {
   /* =========================
      FILTER LOGIC
   ========================= */
- const filteredFloors = useMemo(() => {
+//  const filteredFloors = useMemo(() => {
+//   return floors.filter((f) => {
+//     // Global Search
+//     const fullText = Object.values(f)
+//       .filter(Boolean)
+//       .join(" ")
+//       .toLowerCase();
+
+//     if (search && !fullText.includes(search.toLowerCase()))
+//       return false;
+
+//     // Dynamic filters
+//     for (const key in filters) {
+//       if (!filters[key]) continue;
+
+//       const floorValue = f[key];
+
+//       if (!floorValue) return false;
+
+//       if (
+//         String(floorValue).trim().toLowerCase() !==
+//         String(filters[key]).trim().toLowerCase()
+//       ) {
+//         return false;
+//       }
+//     }
+
+//     return true;
+//   });
+// }, [floors, search, filters]);
+const filteredFloors = useMemo(() => {
   return floors.filter((f) => {
-    // Global Search
+    // Global search
     const fullText = Object.values(f)
       .filter(Boolean)
       .join(" ")
@@ -254,13 +287,14 @@ useEffect(() => {
       if (!filters[key]) continue;
 
       const floorValue = f[key];
+      if (floorValue === undefined || floorValue === null)
+        return false;
 
-      if (!floorValue) return false;
+      // 🧠 Smart comparison
+      const a = String(floorValue).trim().toLowerCase();
+      const b = String(filters[key]).trim().toLowerCase();
 
-      if (
-        String(floorValue).trim().toLowerCase() !==
-        String(filters[key]).trim().toLowerCase()
-      ) {
+      if (!a.includes(b)) {
         return false;
       }
     }
@@ -359,6 +393,27 @@ useEffect(() => {
           >
             Clear
           </button>
+                          <button
+  onClick={() => {
+    const params = new URLSearchParams();
+
+    params.append("type", type);
+
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        params.append(key, filters[key]);
+      }
+    });
+
+    if (search) {
+      params.append("search", search);
+    }
+
+    navigate(`/shared-listings?${params.toString()}`);
+  }}
+>    
+  Share
+</button>
         </div>
       </div>
 

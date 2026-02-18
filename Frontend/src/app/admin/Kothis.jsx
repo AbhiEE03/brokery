@@ -2,8 +2,11 @@ import { useEffect, useMemo, useState } from "react";
 import api from "../../services/api";
 import AdminLayout from "../../components/layout/AdminLayout";
 import SectionHeader from "./components/SectionHeader";
+import { useNavigate } from "react-router-dom";
 
 export default function Kothis() {
+      const type = "kothi";  // ✅ ADD THIS LINE
+  const navigate = useNavigate();
   const [kothis, setKothis] = useState([]);
   const [meta, setMeta] = useState({});
   const [loading, setLoading] = useState(true);
@@ -114,6 +117,27 @@ export default function Kothis() {
           >
             Clear
           </button>
+                          <button
+  onClick={() => {
+    const params = new URLSearchParams();
+
+    params.append("type", type);
+
+    Object.keys(filters).forEach((key) => {
+      if (filters[key]) {
+        params.append(key, filters[key]);
+      }
+    });
+
+    if (search) {
+      params.append("search", search);
+    }
+
+    navigate(`/shared-listings?${params.toString()}`);
+  }}
+>    
+  Share
+</button>
         </div>
       </div>
 
