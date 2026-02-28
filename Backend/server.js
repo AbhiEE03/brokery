@@ -10,7 +10,7 @@ dotenv.config();
 
 // DB & cron
 // require("./config/dbs");
-require("./configs/dbs")
+require("./configs/dbs");
 // require("./cron");
 
 // Routes
@@ -30,29 +30,35 @@ app.use(express.urlencoded({ extended: true }));
 /* =======================
    CORS (THIS FIXES NETWORK ERROR)
 ======================= */
-// app.use(
-//    cors({
-//       origin: "https://batra-associates-ba.vercel.app", // React
-//       credentials: true
-//    })
-// );
 const allowedOrigins = [
-  "http://localhost:5173", // Vite
-  "http://localhost:3000", // CRA (if used)
-  "https://batra-associates-ba.vercel.app"
+	"http://localhost:5173", // For local testing on your laptop
+	"http://localhost:3000",
+	"https://brokeryfrontend.vercel.app", // Your live Vercel site
 ];
 
 app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
+	cors({
+		origin: allowedOrigins,
+		credentials: true,
+	}),
+);
+// const allowedOrigins = [
+// 	"http://localhost:5173", // Vite
+// 	"http://localhost:3000", // CRA (if used)
+// 	"https://batra-associates-ba.vercel.app",
+// ];
+
+app.use(
+	cors({
+		origin: function (origin, callback) {
+			if (!origin || allowedOrigins.includes(origin)) {
+				callback(null, true);
+			} else {
+				callback(new Error("Not allowed by CORS"));
+			}
+		},
+		credentials: true,
+	}),
 );
 //  "http://localhost:5173" ||
 // "https://batra-associates-ba.vercel.app" ||
@@ -73,7 +79,7 @@ app.use("/api/shared-listings", shareListing);
    HEALTH CHECK
 ======================= */
 app.get("/api/health", (req, res) => {
-   res.json({ status: "ok" });
+	res.json({ status: "ok" });
 });
 
 /* =======================
@@ -81,5 +87,5 @@ app.get("/api/health", (req, res) => {
 ======================= */
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-   console.log(`🚀 API running at http://localhost:${PORT}`);
+	console.log(`🚀 API running at http://localhost:${PORT}`);
 });
