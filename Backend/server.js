@@ -8,10 +8,8 @@ const path = require("path");
 // Load env
 dotenv.config();
 
-// DB & cron
-// require("./config/dbs");
+// DB
 require("./configs/dbs");
-// require("./cron");
 
 // Routes
 const authRoutes = require("./routes/auth");
@@ -28,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* =======================
-   CORS (THIS FIXES NETWORK ERROR)
+   CORS (CLEAN & SECURE)
 ======================= */
 const allowedOrigins = [
 	"http://localhost:5173", // For local testing on your laptop
@@ -42,26 +40,7 @@ app.use(
 		credentials: true,
 	}),
 );
-// const allowedOrigins = [
-// 	"http://localhost:5173", // Vite
-// 	"http://localhost:3000", // CRA (if used)
-// 	"https://batra-associates-ba.vercel.app",
-// ];
 
-app.use(
-	cors({
-		origin: function (origin, callback) {
-			if (!origin || allowedOrigins.includes(origin)) {
-				callback(null, true);
-			} else {
-				callback(new Error("Not allowed by CORS"));
-			}
-		},
-		credentials: true,
-	}),
-);
-//  "http://localhost:5173" ||
-// "https://batra-associates-ba.vercel.app" ||
 /* =======================
    STATIC FILES
 ======================= */
@@ -76,8 +55,13 @@ app.use("/api/broker", brokerRoutes);
 app.use("/api/shared-listings", shareListing);
 
 /* =======================
-   HEALTH CHECK
+   HEALTH & ROOT ROUTES
 ======================= */
+// This fixes the "Cannot GET /" error on Render!
+app.get("/", (req, res) => {
+	res.send("Brokery API is running perfectly! 🚀");
+});
+
 app.get("/api/health", (req, res) => {
 	res.json({ status: "ok" });
 });
