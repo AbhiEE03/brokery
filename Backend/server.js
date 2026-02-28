@@ -29,9 +29,9 @@ app.use(express.urlencoded({ extended: true }));
    CORS (CLEAN & SECURE)
 ======================= */
 const allowedOrigins = [
-	"http://localhost:5173", // For local testing on your laptop
+	"http://localhost:5173", // For local testing
 	"http://localhost:3000",
-	"https://brokeryfrontend.vercel.app", // Your live Vercel site
+	"https://brokeryfrontend.vercel.app", //  live Vercel site
 ];
 
 app.use(
@@ -57,7 +57,7 @@ app.use("/api/shared-listings", shareListing);
 /* =======================
    HEALTH & ROOT ROUTES
 ======================= */
-// This fixes the "Cannot GET /" error on Render!
+// Welcome msg on Render!
 app.get("/", (req, res) => {
 	res.send("Brokery API is running perfectly! 🚀");
 });
